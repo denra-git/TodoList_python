@@ -1,6 +1,6 @@
 
-def show_menu () :
-    print("""choose what you want to do : \n 
+def showMenu () :
+    print("""choose what you want to do : \n
           1. add a task \n 
           2. remove a task \n 
           3. finishing task\n
@@ -8,49 +8,50 @@ def show_menu () :
           5. remove all done \n""")
 
 
-def show_all_tasks (tasks) :
+def showAllTasks (tasks) :
     if len(tasks) == 0 :
         print("""
               TASKS :
               there is nothing to do ! \n""")
-    else :  
+    else :
+        number = 1
         for task in tasks :
-            number = tasks.index(task)+1
             description = task.get("description")
             status = "◼" if task.get("status") else "◻"
             print(f"{status}⸽{number} : {description}")
-    
+            number +=1
 
-def remove_all_dones (tasks) :
+
+def removeAllDones (tasks) :
     for task in tasks :
         if task["status"] :
             tasks.remove(task)
     print("Done")
-      
 
-def add_task (tasks) :
-    run_adding = True
+
+def addTask (tasks) :
+    runAdding = True
     print("enter 'x' if you are finished !")
-    while run_adding :
-        task_description = input("enter task description : ")
-        if task_description == "x" :
-            run_adding = False
+    while runAdding :
+        taskDescription = input("enter task description : ")
+        if taskDescription == "x" :
+            runAdding = False
             continue
         task = {
-            "description" : task_description ,
+            "description" : taskDescription ,
             "status" : False 
         }
         tasks.append(task)
     print("task adding done !\n")
 
 
-def remove_task (tasks) :
+def removeTask (tasks):
     print("enter '0' if you are finished !")
-    run_removing = True
-    while run_removing :
+    runRemoving = True
+    while runRemoving :
         choice = int(input("which number do you want to remove ? : "))
         if choice == 0 :
-            run_removing = False
+            runRemoving = False
             continue
         for task in tasks:
             if choice == tasks.index(task)+1 :
@@ -58,41 +59,45 @@ def remove_task (tasks) :
     print("Done")
 
 
-def finishing_task (tasks) :
+def finishingTask (tasks):
     print("enter '0' if you are finished !")
-    run_doning = True
-    while run_doning :
+    runDoning = True
+    while runDoning :
         choice = int(input("which one : "))
         if choice == 0 :
-            run_doning = False
+            runDoning = False
             continue
         for task in tasks :
-           if choice == tasks.index(task)+1 :
+            if choice == tasks.index(task)+1 :
                 task["status"] = True
     print("Done")
 
 
 
 
-def main() :
+def main():
     run = True
     tasks = []
-    while(run):
-        show_all_tasks(tasks)
-        show_menu()
-        selection = int(input("select a number : "))
-        match selection :
-            case 1 : 
-                add_task(tasks)
-            case 2 :
-                remove_task(tasks)
-            case 3:
-                finishing_task(tasks)
-            case 4 :
-                show_menu()
-            case 5 :
-                remove_all_dones(tasks)
-            case _ :
-                print(" it's not a valid choise ! \n")
-        
+    while run:
+        showAllTasks(tasks)
+        showMenu()
+        selection = input("select a number : ")
+        try :
+            match int(selection) :
+                case 1 :
+                    addTask(tasks)
+                case 2 :
+                    removeTask(tasks)
+                case 3:
+                    finishingTask(tasks)
+                case 4 :
+                    showMenu()
+                case 5 :
+                    removeAllDones(tasks)
+                case _ :
+                    print(" it's not a valid choise ! \n")
+
+        except ValueError :
+            print("we need a number from 1 to 5 !")
+
 main()
