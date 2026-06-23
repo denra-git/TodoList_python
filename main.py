@@ -1,3 +1,4 @@
+from datetime import date 
 
 def showMenu () :
     print("""choose what you want to do : \n
@@ -18,7 +19,8 @@ def showAllTasks (tasks) :
         for task in tasks :
             description = task.get("description")
             status = "◼" if task.get("status") else "◻"
-            print(f"{status}⸽{number} : {description}")
+            finishingTime = date.today() if task.get("status") else " "
+            print(f"{status}⸽ {number} : {description} ⸽ {finishingTime}")
             number +=1
 
 
