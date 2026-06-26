@@ -25,7 +25,7 @@ def showAllTasks (tasks) :
 
 
 def removeAllDones (tasks) :
-    for task in tasks :
+    for task in tasks[:] :
         if task["status"] :
             tasks.remove(task)
     print("Done")
@@ -55,9 +55,13 @@ def removeTask (tasks):
         if choice == 0 :
             runRemoving = False
             continue
-        for task in tasks:
-            if choice == tasks.index(task)+1 :
-                tasks.remove(task)
+        elif 1 <= choice <= len(tasks): 
+                for i, task in enumerate(tasks) :
+                    if choice == i + 1 :
+                        tasks.pop(i)
+                        break
+        else :
+                print("please select a valid number")
     print("Done")
 
 
@@ -69,9 +73,13 @@ def finishingTask (tasks):
         if choice == 0 :
             runDoning = False
             continue
-        for task in tasks :
-            if choice == tasks.index(task)+1 :
-                task["status"] = True
+        elif 1<= choice <= len(tasks):
+            for i , task in enumerate(tasks) :
+                if choice == i + 1 :
+                    task["status"] = True
+                    break
+        else:
+            print("enter a valide number")
     print("Done")
 
 
@@ -93,7 +101,7 @@ def main():
                 case 3:
                     finishingTask(tasks)
                 case 4 :
-                    showMenu()
+                    continue
                 case 5 :
                     removeAllDones(tasks)
                 case _ :
