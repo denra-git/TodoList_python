@@ -1,15 +1,36 @@
-from datetime import date 
+"""
+TodoList Application
 
-def showMenu () :
+A command-line todo list manager that allows users to:
+- Add tasks
+- Remove tasks
+- Mark tasks as complete
+- View all tasks
+- Remove completed tasks
+"""
+
+from datetime import date
+import json
+
+def get_data_from_file():
+    with open("data.json" , "r", encoding="utf-8") as file :
+        data = json.load(file)
+        return data
+
+def write_data_to_file(data):
+    with open("data.json" , "w", encoding="utf-8") as file :
+        json.dump(data,file)
+
+
+def show_menu():
     print("""choose what you want to do : \n
           1. add a task \n 
           2. remove a task \n 
           3. finishing task\n
-          4. show all tasks\n 
-          5. remove all done \n""")
+          4. remove all done \n""")
 
 
-def showAllTasks (tasks) :
+def show_all_tasks(tasks):
     if len(tasks) == 0 :
         print("""
               TASKS :
@@ -17,93 +38,108 @@ def showAllTasks (tasks) :
     else :
         number = 1
         for task in tasks :
-            description = task.get("description")
+            title = task.get("title")
             status = "◼" if task.get("status") else "◻"
-            finishingTime = date.today() if task.get("status") else " "
-            print(f"{status}⸽ {number} : {description} ⸽ {finishingTime}")
+            finishing_date = date.today() if task.get("status") else " "
+            print(f"{status}⸽ {number} : {title} ⸽ {finishing_date}")
             number +=1
 
 
-def removeAllDones (tasks) :
+def remove_all_done(tasks):
     for task in tasks[:] :
         if task["status"] :
             tasks.remove(task)
+    write_data_to_file(tasks)
     print("Done")
 
 
-def addTask (tasks) :
-    runAdding = True
+def add_task(tasks):
+    run_adding = True
     print("enter 'x' if you are finished !")
-    while runAdding :
-        taskDescription = input("enter task description : ")
-        if taskDescription == "x" :
-            runAdding = False
+    while run_adding :
+        task_title = input(" task title : ")
+        if task_title == "x" :
+            run_adding = False
             continue
         task = {
-            "description" : taskDescription ,
+            "title" : task_title ,
             "status" : False 
         }
         tasks.append(task)
-    print("task adding done !\n")
+        write_data_to_file(tasks)
+    print(" TASKS ADDED !\n")
 
-
-def removeTask (tasks):
-    print("enter '0' if you are finished !")
-    runRemoving = True
-    while runRemoving :
-        choice = int(input("which number do you want to remove ? : "))
-        if choice == 0 :
-            runRemoving = False
-            continue
-        elif 1 <= choice <= len(tasks): 
-                for i, task in enumerate(tasks) :
-                    if choice == i + 1 :
-                        tasks.pop(i)
-                        break
-        else :
-                print("please select a valid number")
-    print("Done")
-
-
-def finishingTask (tasks):
-    print("enter '0' if you are finished !")
-    runDoning = True
-    while runDoning :
-        choice = int(input("which one : "))
-        if choice == 0 :
-            runDoning = False
-            continue
-        elif 1<= choice <= len(tasks):
-            for i , task in enumerate(tasks) :
-                if choice == i + 1 :
-                    task["status"] = True
+def remove_task(tasks):
+    run_removing = True
+    choice_input = input("list of removes separated by , : ")
+    while run_removing :
+        
+        if choice_input.strip() == "0" :
+            run_removing = False
+            break
+        
+        try :
+            choices = [int(x.strip()) for x in choice_input.split(",")]
+            choices.sort(reverse=True)
+            for choice in choices:
+                if 1 <= choice <= len(tasks):
+                    tasks.pop(choice - 1)
+                else:
+                    print(f"Invalid number: {choice}")
                     break
-        else:
-            print("enter a valide number")
+                run_removing = False
+            write_data_to_file(tasks)
+            print("Tasks removed!")
+                
+        except ValueError:
+            print("Please enter numbers separated by commas (e.g., 1,2,3)")
     print("Done")
 
-
+def finishing_task(tasks):
+    run_doing = True
+    choice_input = input("list of done separated by , : ")
+    while run_doing :
+        
+        if choice_input.strip() == "0" :
+                run_doing = False
+                continue
+            
+        try:
+            choices = [int(x.strip()) for x in choice_input.split(",") ]
+            choices.sort(reverse=True)
+            for choice in choices:
+                if 1 <= choice <= len(tasks):
+                   tasks[choice-1]["status"] = True
+                else:
+                    print(f"Invalid number: {choice}")
+                    break
+                run_doing = False
+                   
+            write_data_to_file(tasks)
+            print("Tasks done!")
+                
+        except ValueError:
+            print("Please enter numbers separated by commas (e.g., 1,2,3)")
+    print("Done")
 
 
 def main():
     run = True
-    tasks = []
     while run:
-        showAllTasks(tasks)
-        showMenu()
+        data = get_data_from_file()
+        show_all_tasks(data)
+        show_menu()
         selection = input("select a number : ")
         try :
             match int(selection) :
                 case 1 :
-                    addTask(tasks)
+                    add_task(data)
                 case 2 :
-                    removeTask(tasks)
+                    remove_task(data)
                 case 3:
-                    finishingTask(tasks)
+                    finishing_task(data)
                 case 4 :
-                    continue
-                case 5 :
-                    removeAllDones(tasks)
+                    remove_all_done(data)
                 case _ :
                     print(" it's not a valid choise ! \n")
 
