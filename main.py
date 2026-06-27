@@ -93,6 +93,7 @@ def remove_task(tasks):
                 
         except ValueError:
             print("Please enter numbers separated by commas (e.g., 1,2,3)")
+            choice_input = input("list of removes separated by , : ")
     print("Done")
 
 def finishing_task(tasks):
@@ -120,6 +121,7 @@ def finishing_task(tasks):
                 
         except ValueError:
             print("Please enter numbers separated by commas (e.g., 1,2,3)")
+            choice_input = input("list of done separated by , : ")
     print("Done")
 
 
