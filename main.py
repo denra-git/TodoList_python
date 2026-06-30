@@ -11,16 +11,22 @@ A command-line todo list manager that allows users to:
 
 from datetime import date
 import json
+import os
 
 def get_data_from_file():
-    with open("data.json" , "r", encoding="utf-8") as file :
-        data = json.load(file)
-        return data
-
+    try:
+        with open("data.json" , "r", encoding="utf-8") as file :
+           data = json.load(file)
+           return data
+    except FileNotFoundError:
+        return []
+    
 def write_data_to_file(data):
-    with open("data.json" , "w", encoding="utf-8") as file :
-        json.dump(data,file)
-
+    try:
+        with open("data.json" , "w", encoding="utf-8") as file :
+            json.dump(data,file)
+    except FileExistsError :
+        data = {}
 
 def show_menu():
     print("""choose what you want to do : \n
@@ -29,21 +35,25 @@ def show_menu():
           3. finishing task\n
           4. remove all done \n""")
 
-
 def show_all_tasks(tasks):
-    if len(tasks) == 0 :
+    file_not_exists = os.path.exists('data.json')
+    if  not file_not_exists :
         print("""
               TASKS :
               there is nothing to do ! \n""")
     else :
-        number = 1
-        for task in tasks :
-            title = task.get("title")
-            status = "◼" if task.get("status") else "◻"
-            finishing_date = date.today() if task.get("status") else " "
-            print(f"{status}⸽ {number} : {title} ⸽ {finishing_date}")
-            number +=1
-
+        if len(tasks) == 0  :
+            print("""
+                  TASKS :
+                  there is nothing to do ! \n""")
+        else :
+            number = 1
+            for task in tasks :
+                title = task.get("title")
+                status = "◼" if task.get("status") else "◻"
+                finishing_date = date.today() if task.get("status") else " "
+                print(f"{status}⸽ {number} : {title} ⸽ {finishing_date}")
+                number +=1
 
 def remove_all_done(tasks):
     for task in tasks[:] :
@@ -51,7 +61,6 @@ def remove_all_done(tasks):
             tasks.remove(task)
     write_data_to_file(tasks)
     print("Done")
-
 
 def add_task(tasks):
     run_adding = True
@@ -65,8 +74,10 @@ def add_task(tasks):
             "title" : task_title ,
             "status" : False 
         }
+        
         tasks.append(task)
         write_data_to_file(tasks)
+        
     print(" TASKS ADDED !\n")
 
 def remove_task(tasks):
